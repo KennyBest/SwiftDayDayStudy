@@ -1,0 +1,6 @@
+framework module Pods_SwiftDayDayStudy {
+  umbrella header "Pods-SwiftDayDayStudy-umbrella.h"
+
+  export *
+  module * { export * }
+}
