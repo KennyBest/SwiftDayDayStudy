@@ -27,6 +27,10 @@ class KBOpenAppStoreViewController: UIViewController {
     
     fileprivate func setupUI() {
         let containerSize = self.view.bounds.size
+        let yogaLayout: YGLayoutConfigurationBlock = { (layout) in
+            layout.isEnabled = true
+            layout.height = 40
+        }
         
         let root = self.view!
         root.backgroundColor = .white
@@ -53,20 +57,34 @@ class KBOpenAppStoreViewController: UIViewController {
         let button2 = UIButton(type: .system)
         button2.setTitle("利用SKStoreProductViewController", for: .normal)
         button2.addTarget(self, action: Selector.openStoreByStoreKit, for: .touchUpInside)
-        button2.configureLayout { (layout) in
+        button2.configureLayout(block: yogaLayout)
+        root.addSubview(button2)
+        
+        let button3 = setupConveniceButton(title: "评分", action: #selector(reviewApp)) { (layout) in
             layout.isEnabled = true
             layout.height = 40
         }
-        root.addSubview(button2)
+        root.addSubview(button3)
         
         root.yoga.applyLayout(preservingOrigin: true)
     }
     
+    
+    fileprivate func setupConveniceButton(title: String, action: Selector, layout: @escaping YGLayoutConfigurationBlock) -> UIButton {
+        let button = UIButton(type: .system)
+        button.setTitle(title, for: .normal)
+        button.addTarget(self, action: action, for: .touchUpInside)
+        button.configureLayout(block: layout)
+        return button
+    }
 }
 
 extension KBOpenAppStoreViewController {
+    
     @objc fileprivate func openAppStoreByUIApplication() {
+        
         let link = "https://itunes.apple.com/cn/app/ke-de-yan-jing/id1015323862?mt=8"
+        
         if let url = URL(string: link), UIApplication.shared.canOpenURL(url) {
             UIApplication.shared.open(url,
                                       options: [:],
@@ -78,7 +96,9 @@ extension KBOpenAppStoreViewController {
 }
 
 extension KBOpenAppStoreViewController: SKStoreProductViewControllerDelegate {
-   @objc fileprivate func openAppStoreByStoreKit() {
+    
+    @objc fileprivate func openAppStoreByStoreKit() {
+        
         let storeProductViewController = SKStoreProductViewController()
         storeProductViewController.delegate = self
         
@@ -98,6 +118,12 @@ extension KBOpenAppStoreViewController: SKStoreProductViewControllerDelegate {
     func productViewControllerDidFinish(_ viewController: SKStoreProductViewController) {
         viewController.dismiss(animated: true, completion: nil)
     }
+    
+    /// 评分
+    @objc fileprivate func reviewApp() {
+        SKStoreReviewController.requestReview()
+    }
+    
 }
 
 private extension Selector {
